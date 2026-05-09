@@ -29,6 +29,7 @@ CREATE TABLE Product (
 
 -- Sample data
 INSERT INTO Category (CATEGORY_ID, NAME, DESCRIPTION, CREATED_AT, UPDATED_AT) VALUES
+(0, 'No Category', 'No Category', CURDATE(), CURDATE()),
 (1, 'Electronics', 'Gadgets, devices, and accessories', CURDATE(), CURDATE()),
 (2, 'Books', 'Physical books, e-books, and audiobooks', CURDATE(), CURDATE()),
 (3, 'Apparel', 'Clothing, shoes, and wearable accessories', CURDATE(), CURDATE());
