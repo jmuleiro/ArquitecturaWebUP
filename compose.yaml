@@ -1,0 +1,48 @@
+name: arquitectura-web
+
+services:
+  backend:
+    build:
+      context: backend/
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      PORT: 3000
+      DATABASE_HOST: database
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: stock_management
+      LOG_LEVEL: 'log' # log, verbose
+    networks:
+      - app
+
+  database:
+    build:
+      context: db/
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      - app
+    volumes:
+      - mariadb:/var/lib/mysql/
+  
+  db-shell:
+    image: mariadb:lts-ubi
+    restart: unless-stopped
+    networks:
+      - app
+    command:
+      - sleep
+      - infinity
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  mariadb:
+    driver: local
