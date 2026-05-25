@@ -18,8 +18,7 @@ services:
       - app
 
   database:
-    build:
-      context: db/
+    image: mariadb:lts-ubi
     restart: always
     ports:
       - 3306:3306
@@ -29,6 +28,7 @@ services:
       - app
     volumes:
       - mariadb:/var/lib/mysql/
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   
   db-shell:
     image: mariadb:lts-ubi
