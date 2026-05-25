@@ -28,5 +28,5 @@ export class Category {
 
   // Defines the One-to-Many relationship (One Category -> Many Products)
   @OneToMany(() => Product, (product) => product.category)
-  products: Product[] = new Product[0];
+  products: Product[];
 }

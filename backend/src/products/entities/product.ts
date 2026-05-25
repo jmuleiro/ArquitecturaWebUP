@@ -1,19 +1,19 @@
-import { 
+import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn
- } from "typeorm";
+} from "typeorm";
 import { Category } from '@src/categories/entities/category';
 
 @Entity('Product')
 export class Product {
   @PrimaryGeneratedColumn('uuid', { name: 'PRODUCT_ID' })
-  productId: string = "";
+  productId: string;
 
-  @Column({ name: 'NAME', type: 'char', length: 50})
-  name: string = "";
+  @Column({ name: 'NAME', type: 'char', length: 50 })
+  name: string;
 
   @Column({ name: 'DESCRIPTION', type: 'char', length: 250, nullable: true })
   description: string | null = null;
@@ -36,5 +36,5 @@ export class Product {
   // Defines the Many-to-One relationship (Many Products -> One Category)
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'CATEGORY_ID' }) // Maps the relation to the physical column
-  category: Category = new Category();
+  category: Category;
 }
