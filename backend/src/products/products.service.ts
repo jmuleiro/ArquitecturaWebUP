@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product';
@@ -35,5 +35,19 @@ export class ProductsService {
         category: true
       }
     });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.productRepository.delete(id);
+  }
+
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+    const product = await this.findOne(id);
+    if (!product) {
+      throw new NotFoundException(`Product with ID "${id}" not found`);
+    }
+
+    const updatedProduct = this.productRepository.merge(product, updateProductDto);
+    return await this.productRepository.save(updatedProduct);
   }
 }
