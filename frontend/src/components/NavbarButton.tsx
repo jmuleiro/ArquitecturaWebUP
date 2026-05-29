@@ -5,14 +5,17 @@ import { Button, useTheme } from "@mui/material";
 
 interface NavbarButtonProps {
   text: string;
+  href: string;
   icon?: React.ReactNode;
 }
 
-export default function NavbarButton({ text, icon }: NavbarButtonProps) {
+export default function NavbarButton({ text, icon, href }: NavbarButtonProps) {
   const theme = useTheme();
 
   return (
-    <Button variant="text" startIcon={icon}>
+    <Button variant="text" startIcon={icon} href={href} sx={{
+      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+    }}>
       {text}
     </Button>
   );

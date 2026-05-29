@@ -49,8 +49,8 @@ export default function Navbar() {
             />
           </Box>
         </Link>
-        <NavbarButton text="Products" icon={<InventoryIcon />} />
-        <NavbarButton text="Categories" icon={<CategoryIcon />} />
+        <NavbarButton text="Products" href="/products" icon={<InventoryIcon />} />
+        <NavbarButton text="Categories" href="/categories" icon={<CategoryIcon />} />
       </Toolbar>
     </AppBar>
   );
