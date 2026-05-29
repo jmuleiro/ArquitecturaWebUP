@@ -16,6 +16,8 @@ async function bootstrap() {
     timestamp: false
   }));
 
+  app.enableCors({ origin: "*" });
+
   const docBuilder = new DocumentBuilder()
     .setTitle("Stock Management")
     .setDescription("Stock & Category Management API")
