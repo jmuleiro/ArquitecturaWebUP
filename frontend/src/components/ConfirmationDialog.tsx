@@ -9,7 +9,6 @@ export interface ConfirmationDialogProps {
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
-  // const [open, setOpen] = useState(false); // This goes outside
   const { onClose, open, message } = props;
 
   return (
