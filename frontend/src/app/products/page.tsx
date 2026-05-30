@@ -6,6 +6,7 @@ import { Add, Edit, Delete } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridRowSelectionModel, GridRowId } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Navbar from "@/components/Navbar";
+import ConfirmationDialog from "@/components/ConfirmationDialog";
 
 const DashboardCard = styled(Paper)(({ theme }) => ({
   display: 'flex',
@@ -61,11 +62,15 @@ const DeleteButton = ({ disabled, onClick }: { disabled: boolean, onClick?: () =
 };
 
 export default function ProductsPage() {
+  const [confDialogOpen, setConfDialogOpen] = useState(false);
+  const [confDialogValue, setConfDialogValue] = useState('cancel');
   const [dataRows, setDataRows] = useState<any[]>([]);
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>({
     type: 'include',
     ids: new Set<GridRowId>(),
   });
+
+  let deleteMessage = "Do you wish to delete this product?"
 
   const hasSelection = selectedRowIds.type === 'include'
     ? selectedRowIds.ids.size > 0
@@ -85,12 +90,12 @@ export default function ProductsPage() {
   }
 
   const handleDelete = () => {
-    const selectedRows = getSelectedRows();
+    setConfDialogOpen(true);
   }
 
-  useEffect(() => {
-    const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.API_URL;
 
+  const fetchProducts = () => {
     fetch(`${apiUrl}/products`, {
       method: 'GET',
       headers: {
@@ -117,6 +122,26 @@ export default function ProductsPage() {
         setDataRows(mappedRows);
       })
       .catch((error) => console.error('Error:', error));
+  }
+
+  const handleConfDialogClose = (value: string) => {
+    setConfDialogOpen(false);
+    setConfDialogValue(value);
+    if (value === 'confirm') {
+      const selectedRows = getSelectedRows();
+      const plural = selectedRows.length === 1 ? "product" : "products";
+      deleteMessage = `Do you wish to delete ${selectedRows.length} ${plural}?`
+      selectedRows.forEach((row) => {
+        fetch(`${apiUrl}/products/${row.id}`, {
+          method: 'DELETE',
+        }).catch((error) => console.error('Error:', error));
+      });
+      fetchProducts();
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
   return (
@@ -162,17 +187,14 @@ export default function ProductsPage() {
                   },
                 },
               }}
-              pageSizeOptions={[10, 25, 50]}
+              pageSizeOptions={[15, 30, 50]}
               checkboxSelection
               disableRowSelectionOnClick
               showToolbar
               onRowSelectionModelChange={(newSelectionModel) => {
                 setSelectedRowIds(newSelectionModel);
               }}
-
-            >
-
-            </DataGrid>
+            />
             <Container sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <AddButton />
               <EditButton disabled={!hasSelection || !multipleSelected} onClick={handleEdit} />
@@ -182,6 +204,11 @@ export default function ProductsPage() {
 
         </Container>
       </Box>
+      <ConfirmationDialog
+        open={confDialogOpen}
+        onClose={handleConfDialogClose}
+        message={deleteMessage}
+      />
     </>
   );
 }
