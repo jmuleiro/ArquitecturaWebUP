@@ -7,6 +7,8 @@ import { DataGrid, GridColDef, GridRowSelectionModel, GridRowId } from "@mui/x-d
 import { styled } from "@mui/material/styles";
 import Navbar from "@/components/Navbar";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
+import EditDialog, { EditableProperties } from "@/components/EditDialog";
+import Product from "@/entities/Product";
 
 const DashboardCard = styled(Paper)(({ theme }) => ({
   display: 'flex',
@@ -61,9 +63,16 @@ const DeleteButton = ({ disabled, onClick }: { disabled: boolean, onClick?: () =
   );
 };
 
+let editableProperties: EditableProperties[] = [];
+
 export default function ProductsPage() {
+  // Confirmation dialog states
   const [confDialogOpen, setConfDialogOpen] = useState(false);
-  const [confDialogValue, setConfDialogValue] = useState('cancel');
+
+  // Edit dialog states
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  // Data states
   const [dataRows, setDataRows] = useState<any[]>([]);
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>({
     type: 'include',
@@ -71,6 +80,7 @@ export default function ProductsPage() {
   });
 
   let deleteMessage = "Do you wish to delete this product?"
+  let editMessage = "Edit product properties"
 
   const hasSelection = selectedRowIds.type === 'include'
     ? selectedRowIds.ids.size > 0
@@ -86,7 +96,24 @@ export default function ProductsPage() {
   }
 
   const handleEdit = () => {
-    const selectedRows = getSelectedRows();
+    const selectedRow = getSelectedRows()[0];
+    Object.entries(selectedRow)
+      .forEach(([key, value]) => {
+        if (key !== "id" && key !== "category") {
+          editableProperties.push({
+            name: key,
+            value: value as string,
+            editable: true
+          })
+        } else {
+          editableProperties.push({
+            name: key,
+            value: value as string,
+            editable: false
+          })
+        }
+      })
+    setEditDialogOpen(true);
   }
 
   const handleDelete = () => {
@@ -126,19 +153,77 @@ export default function ProductsPage() {
 
   const handleConfDialogClose = (value: string) => {
     setConfDialogOpen(false);
-    setConfDialogValue(value);
     if (value === 'confirm') {
       const selectedRows = getSelectedRows();
       const plural = selectedRows.length === 1 ? "product" : "products";
       deleteMessage = `Do you wish to delete ${selectedRows.length} ${plural}?`
-      selectedRows.forEach((row) => {
+
+      const deletePromises = selectedRows.map((row) =>
         fetch(`${apiUrl}/products/${row.id}`, {
           method: 'DELETE',
-        }).catch((error) => console.error('Error:', error));
+        }).catch((error) => console.error('Error:', error))
+      );
+
+      Promise.all(deletePromises).then(() => {
+        fetchProducts();
       });
-      fetchProducts();
     }
   }
+
+  const handleEditDialogClose = (
+    action: 'confirm' | 'cancel',
+    updatedProperties?: EditableProperties[]
+  ) => {
+    setEditDialogOpen(false);
+    editableProperties = [];
+    if (action === 'confirm' && updatedProperties) {
+      const originalProduct = getSelectedRows()[0];
+
+      if (!originalProduct) return; // TODO: handle this error
+
+      const rawData = Object.fromEntries(
+        updatedProperties.map((prop) => [prop.name, prop.value])
+      );
+
+      const updatedProduct = Object.assign(
+        new Product(
+          originalProduct.id,
+          rawData.name ?? originalProduct.name,
+          rawData.category ?? originalProduct.category,
+          Number(rawData.stock) ?? originalProduct.stock,
+          rawData.description ?? originalProduct.description),
+        rawData
+      );
+
+      const hasChanges =
+        updatedProduct.name !== originalProduct.name ||
+        updatedProduct.category !== originalProduct.category ||
+        updatedProduct.stock !== originalProduct.stock ||
+        updatedProduct.description !== originalProduct.description;
+
+      if (hasChanges) {
+        fetch(`${apiUrl}/products/${updatedProduct.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            name: updatedProduct.name,
+            description: updatedProduct.description,
+            stock: Number(updatedProduct.stock),
+            // TODO: include category update request
+          }),
+        })
+          .then(() => {
+            fetchProducts();
+          })
+          .catch((error) => console.error('Error:', error));
+      } else {
+        fetchProducts();
+      }
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -208,6 +293,12 @@ export default function ProductsPage() {
         open={confDialogOpen}
         onClose={handleConfDialogClose}
         message={deleteMessage}
+      />
+      <EditDialog
+        open={editDialogOpen}
+        onClose={handleEditDialogClose}
+        message={editMessage}
+        properties={editableProperties}
       />
     </>
   );
