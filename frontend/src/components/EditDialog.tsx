@@ -15,6 +15,7 @@ export interface EditableProperties {
   name: string;
   editable?: boolean;
   value?: string;
+  required: boolean;
 }
 
 export interface EditDialogProps {
@@ -53,6 +54,7 @@ export default function EditDialog(props: EditDialogProps) {
               label={property.name.charAt(0).toUpperCase() + property.name.slice(1)}
               disabled={!property.editable}
               value={property.value || ''}
+              required={property.required}
               onChange={(e) => handleChange(property.name, e.target.value)}
               variant="outlined"
               fullWidth
