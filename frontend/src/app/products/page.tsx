@@ -72,6 +72,9 @@ export default function ProductsPage() {
   // Edit dialog states
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
+  // Add dialog states
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+
   // Data states
   const [dataRows, setDataRows] = useState<any[]>([]);
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>({
@@ -81,6 +84,7 @@ export default function ProductsPage() {
 
   let deleteMessage = "Do you wish to delete this product?"
   let editMessage = "Edit product properties"
+  let addMessage = "Add a new product"
 
   const hasSelection = selectedRowIds.type === 'include'
     ? selectedRowIds.ids.size > 0
@@ -103,13 +107,15 @@ export default function ProductsPage() {
           editableProperties.push({
             name: key,
             value: value as string,
-            editable: true
+            editable: true,
+            required: false
           })
         } else {
           editableProperties.push({
             name: key,
             value: value as string,
-            editable: false
+            editable: false,
+            required: false
           })
         }
       })
@@ -225,6 +231,33 @@ export default function ProductsPage() {
     }
   };
 
+  const handleAddDialogClose = (
+    action: 'confirm' | 'cancel',
+    updatedProperties?: EditableProperties[]
+  ) => {
+    setAddDialogOpen(false);
+    editableProperties = [];
+    if (action === 'confirm' && updatedProperties) {
+      fetch(`${apiUrl}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: updatedProperties[0].value,
+          description: updatedProperties[1].value,
+          stock: Number(updatedProperties[2].value),
+          // TODO: include category creation request
+        }),
+      })
+        .then(() => {
+          fetchProducts();
+        })
+        .catch((error) => console.error('Error:', error));
+    }
+  }
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -299,6 +332,37 @@ export default function ProductsPage() {
         onClose={handleEditDialogClose}
         message={editMessage}
         properties={editableProperties}
+      />
+      <EditDialog
+        open={addDialogOpen}
+        onClose={handleAddDialogClose}
+        message={addMessage}
+        properties={[
+          {
+            name: 'name',
+            value: '',
+            required: true,
+            editable: true
+          },
+          {
+            name: 'category',
+            value: '',
+            required: true,
+            editable: true
+          },
+          {
+            name: 'description',
+            value: '',
+            required: false,
+            editable: true
+          },
+          {
+            name: 'stock',
+            value: '',
+            required: true,
+            editable: true
+          },
+        ]}
       />
     </>
   );
