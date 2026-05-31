@@ -16,10 +16,10 @@ export default function Navbar() {
       position="fixed"
       elevation={0}
       sx={{
-        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(10, 10, 10, 0.75)' : 'rgba(255, 255, 255, 0.75)',
+        backgroundColor: 'rgba(54, 54, 54, 0.75)',
         backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
-        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+        borderBottom: `1px solid ${'rgba(255, 255, 255, 0.08)'}`,
+        color: '#ffffff',
         zIndex: theme.zIndex.drawer + 1,
         transition: 'background-color 0.3s ease, border-color 0.3s ease',
       }}

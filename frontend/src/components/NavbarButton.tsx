@@ -14,7 +14,7 @@ export default function NavbarButton({ text, icon, href }: NavbarButtonProps) {
 
   return (
     <Button variant="text" startIcon={icon} href={href} sx={{
-      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+      color: '#ffffff',
     }}>
       {text}
     </Button>
