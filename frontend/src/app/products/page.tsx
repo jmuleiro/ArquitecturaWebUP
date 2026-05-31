@@ -7,7 +7,7 @@ import { DataGrid, GridColDef, GridRowSelectionModel, GridRowId } from "@mui/x-d
 import { styled } from "@mui/material/styles";
 import Navbar from "@/components/Navbar";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
-import EditDialog, { EditableProperties } from "@/components/EditDialog";
+import EditDialog, { EditableField } from "@/components/EditDialog";
 import Product from "@/entities/Product";
 
 const DashboardCard = styled(Paper)(({ theme }) => ({
@@ -26,14 +26,13 @@ const columns: GridColDef[] = [
   { field: 'stock', headerName: 'Stock', minWidth: 50, maxWidth: 100 }
 ];
 
-const AddButton = () => {
+const AddButton = ({ onClick }: { onClick?: () => void }) => {
   return (
     <Button
       variant="contained"
       startIcon={<Add />}
-      onClick={() => {
-        alert('Add');
-      }}>
+      onClick={onClick}
+    >
       New
     </Button>
   );
@@ -63,7 +62,7 @@ const DeleteButton = ({ disabled, onClick }: { disabled: boolean, onClick?: () =
   );
 };
 
-let editableProperties: EditableProperties[] = [];
+let editableProperties: EditableField[] = [];
 
 export default function ProductsPage() {
   // Confirmation dialog states
@@ -81,6 +80,7 @@ export default function ProductsPage() {
     type: 'include',
     ids: new Set<GridRowId>(),
   });
+  const [categories, setCategories] = useState<any[]>([]);
 
   let deleteMessage = "Do you wish to delete this product?"
   let editMessage = "Edit product properties"
@@ -105,6 +105,7 @@ export default function ProductsPage() {
       .forEach(([key, value]) => {
         if (key !== "id" && key !== "category") {
           editableProperties.push({
+            type: 'text',
             name: key,
             value: value as string,
             editable: true,
@@ -112,6 +113,7 @@ export default function ProductsPage() {
           })
         } else {
           editableProperties.push({
+            type: 'text',
             name: key,
             value: value as string,
             editable: false,
@@ -124,6 +126,10 @@ export default function ProductsPage() {
 
   const handleDelete = () => {
     setConfDialogOpen(true);
+  }
+
+  const handleAdd = () => {
+    setAddDialogOpen(true);
   }
 
   const apiUrl = process.env.API_URL;
@@ -157,6 +163,33 @@ export default function ProductsPage() {
       .catch((error) => console.error('Error:', error));
   }
 
+  const fetchCategories = () => {
+    fetch(`${apiUrl}/categories`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const rawCategories = Array.isArray(data)
+          ? data
+          : data.ok && Array.isArray(data.categories)
+            ? data.categories
+            : (data.categories || []);
+
+        const mappedCategories = rawCategories.map((category: any) => ({
+          id: category.categoryId,
+          name: category.name,
+          description: category.description,
+        }));
+
+        setCategories(mappedCategories);
+      })
+      .catch((error) => console.error('Error:', error));
+  }
+
   const handleConfDialogClose = (value: string) => {
     setConfDialogOpen(false);
     if (value === 'confirm') {
@@ -178,7 +211,7 @@ export default function ProductsPage() {
 
   const handleEditDialogClose = (
     action: 'confirm' | 'cancel',
-    updatedProperties?: EditableProperties[]
+    updatedProperties?: EditableField[]
   ) => {
     setEditDialogOpen(false);
     editableProperties = [];
@@ -233,10 +266,9 @@ export default function ProductsPage() {
 
   const handleAddDialogClose = (
     action: 'confirm' | 'cancel',
-    updatedProperties?: EditableProperties[]
+    updatedProperties?: EditableField[]
   ) => {
     setAddDialogOpen(false);
-    editableProperties = [];
     if (action === 'confirm' && updatedProperties) {
       fetch(`${apiUrl}/products`, {
         method: 'POST',
@@ -246,9 +278,9 @@ export default function ProductsPage() {
         },
         body: JSON.stringify({
           name: updatedProperties[0].value,
-          description: updatedProperties[1].value,
+          categoryId: updatedProperties[1].value,
+          description: updatedProperties[3].value,
           stock: Number(updatedProperties[2].value),
-          // TODO: include category creation request
         }),
       })
         .then(() => {
@@ -260,6 +292,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   return (
@@ -314,7 +347,7 @@ export default function ProductsPage() {
               }}
             />
             <Container sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-              <AddButton />
+              <AddButton onClick={handleAdd} />
               <EditButton disabled={!hasSelection || !multipleSelected} onClick={handleEdit} />
               <DeleteButton disabled={!hasSelection} onClick={handleDelete} />
             </Container>
@@ -339,24 +372,32 @@ export default function ProductsPage() {
         message={addMessage}
         properties={[
           {
+            type: 'text',
             name: 'name',
             value: '',
             required: true,
             editable: true
           },
           {
+            type: 'select',
             name: 'category',
             value: '',
             required: true,
-            editable: true
+            editable: true,
+            options: categories.map((category: any) => ({
+              label: category.name,
+              value: category.id,
+            }))
           },
           {
+            type: 'text',
             name: 'description',
             value: '',
             required: false,
             editable: true
           },
           {
+            type: 'text',
             name: 'stock',
             value: '',
             required: true,
