@@ -111,6 +111,18 @@ export default function ProductsPage() {
             editable: true,
             required: false
           })
+        } else if (key === "category") {
+          editableProperties.push({
+            type: 'select',
+            name: key,
+            value: categories.find((category) => category.name === value)?.id || "",
+            editable: true,
+            required: false,
+            options: categories.map((category) => ({
+              label: category.name,
+              value: category.id,
+            }))
+          })
         } else {
           editableProperties.push({
             type: 'text',
@@ -251,7 +263,7 @@ export default function ProductsPage() {
             name: updatedProduct.name,
             description: updatedProduct.description,
             stock: Number(updatedProduct.stock),
-            // TODO: include category update request
+            categoryId: updatedProduct.category,
           }),
         })
           .then(() => {
