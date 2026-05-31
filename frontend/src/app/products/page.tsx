@@ -1,22 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Box, Container, Paper, Typography, Button } from "@mui/material";
+import { Container, Typography, Button } from "@mui/material";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridRowSelectionModel, GridRowId } from "@mui/x-data-grid";
-import { styled } from "@mui/material/styles";
 import Navbar from "@/components/Navbar";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
 import EditDialog, { EditableField } from "@/components/EditDialog";
 import Product from "@/entities/Product";
-
-const DashboardCard = styled(Paper)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: theme.spacing(3),
-}));
+import DashboardCard from "@/components/DashboardCard";
+import MainBox from "@/components/MainBox";
 
 const columns: GridColDef[] = [
   { field: 'id' },
@@ -310,16 +303,7 @@ export default function ProductsPage() {
   return (
     <>
       <Navbar />
-      <Box
-        sx={{
-          pt: '100px',
-          minHeight: '100vh',
-          background: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0a0a0a 0%, #121212 100%)'
-              : 'linear-gradient(135deg, #fdfbf7 0%, #f5f7fa 100%)',
-        }}
-      >
+      <MainBox>
         <Container maxWidth="md">
           <DashboardCard>
             <Typography
@@ -372,7 +356,7 @@ export default function ProductsPage() {
           </DashboardCard>
 
         </Container>
-      </Box>
+      </MainBox>
       <ConfirmationDialog
         open={confDialogOpen}
         onClose={handleConfDialogClose}

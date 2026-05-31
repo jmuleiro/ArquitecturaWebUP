@@ -3,23 +3,8 @@
 import { Button, Stack, Container, Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Navbar from "@/components/Navbar";
-
-const DashboardCard = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(30, 30, 30, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-  backdropFilter: 'blur(16px)',
-  padding: theme.spacing(4),
-  borderRadius: '16px',
-  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
-  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.05)',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(3),
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 40px rgba(0, 0, 0, 0.08)',
-  },
-}));
+import DashboardCard from "@/components/DashboardCard";
+import MainBox from "@/components/MainBox";
 
 const NavigationItem = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#ffffff',
@@ -48,17 +33,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <Box
-        sx={{
-          minHeight: '100vh',
-          background: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0a0a0a 0%, #121212 100%)'
-              : 'linear-gradient(135deg, #fdfbf7 0%, #f5f7fa 100%)',
-          pt: '100px',
-          pb: 6,
-        }}
-      >
+      <MainBox>
         <Container maxWidth="md">
           <DashboardCard>
             <Box>
@@ -68,15 +43,12 @@ export default function Home() {
                 gutterBottom
                 sx={{
                   fontWeight: 800,
-                  background: 'linear-gradient(45deg, #2e8b57 30%, #20b2aa 90%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
                 }}
               >
-                Gestión de Productos
+                Product Management
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Trabajo Práctico de Arquitectura Web - Universidad de Palermo. Seleccione un módulo para comenzar.
+                Trabajo Práctico de Arquitectura Web - Universidad de Palermo.
               </Typography>
             </Box>
             <Stack
@@ -93,7 +65,7 @@ export default function Home() {
             </Stack>
           </DashboardCard>
         </Container>
-      </Box>
+      </MainBox>
     </>
   );
 }

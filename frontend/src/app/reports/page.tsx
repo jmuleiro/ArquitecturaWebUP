@@ -1,20 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Box, Container, Paper, Typography, CircularProgress } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Box, Container, Typography, CircularProgress } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import Navbar from "@/components/Navbar";
-
-const DashboardCard = styled(Paper)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: theme.spacing(3),
-  padding: theme.spacing(3),
-}));
+import MainBox from "@/components/MainBox";
+import DashboardCard from "@/components/DashboardCard";
 
 interface ProductRow {
   id: string;
@@ -58,13 +50,9 @@ export default function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // --- Chart data derivation ---
-
-  // 1. Product stock chart: each product with its stock level
   const stockChartLabels = products.map((p) => p.name);
   const stockChartData = products.map((p) => p.stock);
 
-  // 2. Product count by category
   const categoryCounts: Record<string, number> = {};
   products.forEach((p) => {
     categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1;
@@ -79,17 +67,7 @@ export default function ReportsPage() {
   return (
     <>
       <Navbar />
-      <Box
-        sx={{
-          pt: '100px',
-          pb: '40px',
-          minHeight: '100vh',
-          background: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0a0a0a 0%, #121212 100%)'
-              : 'linear-gradient(135deg, #fdfbf7 0%, #f5f7fa 100%)',
-        }}
-      >
+      <MainBox>
         <Container maxWidth="lg">
           <Typography
             variant="h4"
@@ -116,8 +94,7 @@ export default function ReportsPage() {
                 gap: 4,
               }}
             >
-              {/* Product Stock Report */}
-              <DashboardCard elevation={2}>
+              <DashboardCard>
                 <Typography
                   variant="h5"
                   component="h2"
@@ -156,9 +133,7 @@ export default function ReportsPage() {
                   </Typography>
                 )}
               </DashboardCard>
-
-              {/* Product Count by Category */}
-              <DashboardCard elevation={2}>
+              <DashboardCard>
                 <Typography
                   variant="h5"
                   component="h2"
@@ -190,7 +165,7 @@ export default function ReportsPage() {
             </Box>
           )}
         </Container>
-      </Box>
+      </MainBox>
     </>
   );
 }
