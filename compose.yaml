@@ -1,6 +1,17 @@
 name: arquitectura-web
 
 services:
+  frontend:
+    build:
+      context: frontend/
+    restart: always
+    ports:
+      - 3001:3001
+    environment:
+      PORT: 3001
+    networks:
+      - app
+
   backend:
     build:
       context: backend/

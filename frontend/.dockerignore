@@ -1,0 +1,9 @@
+dist/
+node_modules/
+test/
+.git/
+.gitignore
+.prettierrc
+eslint*
+README.md
+compose.yaml
