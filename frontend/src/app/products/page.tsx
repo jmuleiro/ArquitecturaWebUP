@@ -291,8 +291,8 @@ export default function ProductsPage() {
         body: JSON.stringify({
           name: updatedProperties[0].value,
           categoryId: updatedProperties[1].value,
-          description: updatedProperties[3].value,
-          stock: Number(updatedProperties[2].value),
+          description: updatedProperties[2].value,
+          stock: Number(updatedProperties[3].value),
         }),
       })
         .then(() => {
