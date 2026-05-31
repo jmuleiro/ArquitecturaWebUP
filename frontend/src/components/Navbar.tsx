@@ -6,6 +6,7 @@ import NavbarButton from '@/components/NavbarButton';
 import { AppBar, Toolbar, Box, useTheme } from '@mui/material';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CategoryIcon from '@mui/icons-material/Category';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export default function Navbar() {
   const theme = useTheme();
@@ -51,6 +52,7 @@ export default function Navbar() {
         </Link>
         <NavbarButton text="Products" href="/products" icon={<InventoryIcon />} />
         <NavbarButton text="Categories" href="/categories" icon={<CategoryIcon />} />
+        <NavbarButton text="Reports" href="/reports" icon={<AssessmentIcon />} />
       </Toolbar>
     </AppBar>
   );
