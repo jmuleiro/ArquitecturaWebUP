@@ -8,26 +8,42 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   Stack
 } from "@mui/material";
 
-export interface EditableProperties {
+interface BaseField {
   name: string;
   editable?: boolean;
-  value?: string;
   required: boolean;
 }
 
+export interface TextFieldConfig extends BaseField {
+  type: 'text';
+  value?: string;
+}
+
+export interface SelectFieldConfig extends BaseField {
+  type: 'select';
+  value?: string;
+  options: { label: string; value: string }[];
+}
+
+export type EditableField = TextFieldConfig | SelectFieldConfig;
+
 export interface EditDialogProps {
   open: boolean;
-  onClose: (action: 'confirm' | 'cancel', updatedProperties?: EditableProperties[]) => void;
+  onClose: (action: 'confirm' | 'cancel', updatedFields?: EditableField[]) => void;
   message: string;
-  properties: EditableProperties[];
+  properties: EditableField[];
 }
 
 export default function EditDialog(props: EditDialogProps) {
   const { onClose, open, message, properties } = props;
-  const [fields, setFields] = useState<EditableProperties[]>(properties);
+  const [fields, setFields] = useState<EditableField[]>(properties);
 
   // Sync internal state with properties when dialog opens or properties update
   useEffect(() => {
@@ -38,7 +54,7 @@ export default function EditDialog(props: EditDialogProps) {
 
   const handleChange = (name: string, value: string) => {
     setFields((prev) =>
-      prev.map((prop) => (prop.name === name ? { ...prop, value } : prop))
+      prev.map((field) => (field.name === name ? { ...field, value } : field))
     );
   };
 
@@ -47,19 +63,48 @@ export default function EditDialog(props: EditDialogProps) {
       <DialogTitle>{message}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2} sx={{ my: 1 }}>
-          {fields.map((property) => (
-            <TextField
-              key={property.name}
-              name={property.name}
-              label={property.name.charAt(0).toUpperCase() + property.name.slice(1)}
-              disabled={!property.editable}
-              value={property.value || ''}
-              required={property.required}
-              onChange={(e) => handleChange(property.name, e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-          ))}
+          {fields.map((field) => {
+            const label = field.name.charAt(0).toUpperCase() + field.name.slice(1);
+
+            if (field.type === 'select') {
+              return (
+                <FormControl
+                  key={field.name}
+                  fullWidth
+                  required={field.required}
+                  disabled={!field.editable}
+                >
+                  <InputLabel>{label}</InputLabel>
+                  <Select
+                    name={field.name}
+                    label={label}
+                    value={field.value || ''}
+                    onChange={(e) => handleChange(field.name, e.target.value as string)}
+                  >
+                    {field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              );
+            }
+
+            return (
+              <TextField
+                key={field.name}
+                name={field.name}
+                label={label}
+                disabled={!field.editable}
+                value={field.value || ''}
+                required={field.required}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                variant="outlined"
+                fullWidth
+              />
+            );
+          })}
         </Stack>
       </DialogContent>
       <DialogActions>
