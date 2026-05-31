@@ -316,6 +316,7 @@ export default function ProductsPage() {
               gutterBottom
               sx={{
                 fontWeight: 600,
+                marginTop: '15px'
               }}
             >
               Product Management
@@ -346,7 +347,12 @@ export default function ProductsPage() {
                 setSelectedRowIds(newSelectionModel);
               }}
             />
-            <Container sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Container sx={{
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              marginBottom: '15px'
+            }}>
               <AddButton onClick={handleAdd} />
               <EditButton disabled={!hasSelection || !multipleSelected} onClick={handleEdit} />
               <DeleteButton disabled={!hasSelection} onClick={handleDelete} />
