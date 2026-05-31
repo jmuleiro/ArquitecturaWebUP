@@ -6,3 +6,4 @@ test/
 .prettierrc
 eslint*
 README.md
+compose.yaml
