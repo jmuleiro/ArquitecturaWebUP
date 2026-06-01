@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Container, Typography, Button } from "@mui/material";
-import { Add, Edit, Delete } from "@mui/icons-material";
+import { Container, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowSelectionModel, GridRowId } from "@mui/x-data-grid";
 import Navbar from "@/components/Navbar";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
@@ -10,6 +9,7 @@ import EditDialog, { EditableField } from "@/components/EditDialog";
 import Product from "@/entities/Product";
 import DashboardCard from "@/components/DashboardCard";
 import MainBox from "@/components/MainBox";
+import { AddButton, EditButton, DeleteButton } from "@/components/buttons";
 
 const columns: GridColDef[] = [
   { field: 'id' },
@@ -18,42 +18,6 @@ const columns: GridColDef[] = [
   { field: 'description', headerName: 'Description', minWidth: 300, maxWidth: 400 },
   { field: 'stock', headerName: 'Stock', minWidth: 50, maxWidth: 100 }
 ];
-
-const AddButton = ({ onClick }: { onClick?: () => void }) => {
-  return (
-    <Button
-      variant="contained"
-      startIcon={<Add />}
-      onClick={onClick}
-    >
-      New
-    </Button>
-  );
-};
-
-const EditButton = ({ disabled, onClick }: { disabled: boolean, onClick?: () => void }) => {
-  return (
-    <Button
-      variant="contained"
-      startIcon={<Edit />}
-      disabled={disabled}
-      onClick={onClick}>
-      Edit
-    </Button>
-  );
-};
-
-const DeleteButton = ({ disabled, onClick }: { disabled: boolean, onClick?: () => void }) => {
-  return (
-    <Button
-      variant="contained"
-      startIcon={<Delete />}
-      disabled={disabled}
-      onClick={onClick}>
-      Delete
-    </Button>
-  );
-};
 
 let editableProperties: EditableField[] = [];
 
