@@ -25,11 +25,6 @@ const NavigationItem = styled(Button)(({ theme }) => ({
 }));
 
 export default function Home() {
-
-  const handleNavigation = (destination: string) => {
-    alert(`Navigating to ${destination}`);
-  };
-
   return (
     <>
       <Navbar />
@@ -56,10 +51,10 @@ export default function Home() {
               spacing={2}
               sx={{ mt: 1 }}
             >
-              <NavigationItem onClick={() => handleNavigation('Products')} fullWidth>
+              <NavigationItem href="/products" fullWidth>
                 Products
               </NavigationItem>
-              <NavigationItem onClick={() => handleNavigation('Categories')} fullWidth>
+              <NavigationItem href="/categories" fullWidth>
                 Categories
               </NavigationItem>
             </Stack>
