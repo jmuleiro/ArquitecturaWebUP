@@ -59,3 +59,19 @@ npm run start:prod
 # Alternativamente, iniciar el backend en modo desarrollo
 npm run start:dev
 ```
+
+Nota: Al levantar el backend en modo desarrollo local, se necesitan las siguientes variables en un archivo `.env` en la raíz del backend:
+```bash
+NODE_ENV="development"
+DATABASE_USERNAME=root
+DATABASE_PASSWORD=root
+DATABASE_NAME=stock_management
+```
+
+### Base de datos
+
+```bash
+# Levantar solamente la DB
+docker compose up database
+```
+
